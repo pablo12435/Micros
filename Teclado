@@ -1,0 +1,425 @@
+#include <stdint.h>
+#include "stm321053xx.h"
+
+void keyboard_config();
+uint8_t key_pressed();
+void delays(int n);
+
+uint8_t num=0x00, num1=0x00, num2=0x00, num3=0x00, num4 =0x00;
+uint8_t display, D0, D1, D2, D3;
+uint8_t keypressed = 20;
+uint8_t output_key = 0;
+uint8_t d_display = 2;
+uint8_t dkey = 15;
+
+void keyboard_config (void)
+{
+	/*keyboard IO Config */
+	           //ROW config
+	       //PC5 ROW0: INPUT, PU Enable
+	GPIOC->MODER &=~ (1<<10);
+	GPIOC->MODER &=~ (1<<11);
+	GPIOC->PUPDR |=~ (1<<11);
+
+    //PC6 ROW1: INPUT, PU Enable
+    GPIOC->MODER &=~ (1<<12);
+    GPIOC->MODER &=~ (1<<13);
+    GPIOC->PUPDR |=~ (1<<12);
+
+    //PC8 ROW2: INPUT, PU Enable
+    GPIOC->MODER &=~ (1<<16);
+    GPIOC->MODER &=~ (1<<17);
+    GPIOC->PUPDR |=~ (1<<16);
+    
+    //PC9 ROW3: INPUT, PU Enable
+    GPIOC->MODER &=~ (1<<18);
+    GPIOC->MODER &=~ (1<<19);
+    GPIOC->PUPDR |=~ (1<<18);
+    
+    //Column config
+    
+    //PB11 Col0: OUTPUT, OUTPUT-HIGH
+    GPIOB->MODER &=~ (1<<23);
+    GPIOB->ODR |=~ (1<<11);
+    
+    //PC7
+    GPIOC->MODER &=~ (1<<15);
+    GPIOC->ODR |=~ (1<<7);
+    
+    //PA9
+    GPIOA->MODER &=~ (1<<19);
+    GPIOA->ODR |=~ (1<<9);
+    
+    //PC4
+    GPIOC->MODER &=~ (1<<9);
+    GPIOC->ODR |=~ (1<<4);
+    
+    GPIOA->MODER &=~ (1<<11);
+    
+    
+}
+
+ uint8_t key_pressed(void)
+ 
+ {
+	 if (GPIOC->IDR == (0X3E0))
+	 {
+		 keypressed =20;
+	 }
+	 
+	 //escan colum 0
+	 GPIOB->ODR &=~ (1<<11);
+	 GPIOC->ODR |=~ (1<<7);
+	 GPIOA->ODR |=~ (1<<9);
+	 GPIOC->ODR |=~ (1<<4);
+	 delayms(dkey);
+	 if (GPIOC->IDR == 0X3D0) //EVALUANDO FILA 0
+	 {
+		 keypressed = 1;
+	 }
+	 else if (GPIOC->IDR == 0X3B0) //EVALUANDO FILA 1
+	 {
+	     keypressed = 4;
+	     
+	 }
+	 else if (GPIOC->IDR == 0X2F0) //EVALUANDO FILA 2
+	 {
+		 keypressed = 7;
+	 }
+	 else if (GPIOC->IDR == 0X1F0) //EVALUANDO FILA 3
+	 {
+		 keypressed = 14;
+	 }
+	 
+	 else 
+	 {
+		 keypressed = 20;
+		 {
+			 
+			 //scan col1
+			 GPIOB->ODR |= (1<<11);
+			 GPIOC->ODR &=~ (1<<7);
+			 GPIOA->ODR |= (1<<9);
+			 GPIOC->ODR |= (1<<4);
+			 //delayMs(30);
+			 
+			 if (GPIOC->IDR == 0X350) //EVALUANDO FILA 0
+			 	 {
+			 		 keypressed = 2;
+			 	 }
+			 	 else if (GPIOC->IDR == 0X330) //EVALUANDO FILA 1
+			 	 {
+			 	     keypressed = 5;
+			 	     
+			 	 }
+			 	 else if (GPIOC->IDR == 0X270) //EVALUANDO FILA 2
+			 	 {
+			 		 keypressed = 8;
+			 	 }
+			 	 else if (GPIOC->IDR == 0X170) //EVALUANDO FILA 3
+			 	 {
+			 		 keypressed = 0;
+			 	 }
+			 	 else
+			 	 {
+			 		 keypressed = 20;
+			 	 }
+			 //scan col2
+			 			 GPIOB->ODR |= (1<<11);
+			 			 GPIOC->ODR &=~ (1<<7);
+			 			 GPIOA->ODR |= (1<<9);
+			 			 GPIOC->ODR |= (1<<4);
+			 			 //delayMs(30);
+			 			 
+						 if (GPIOC->IDR == 0X3D0) //EVALUANDO FILA 0
+						 	 {
+						 		 keypressed = 3;
+						 	 }
+						 	 else if (GPIOC->IDR == 0X3B0) //EVALUANDO FILA 1
+						 	 {
+						 	     keypressed = 6;
+						 	     
+						 	 }
+						 	 else if (GPIOC->IDR == 0X2F0) //EVALUANDO FILA 2
+						 	 {
+						 		 keypressed = 9;
+						 	 }
+						 	 else if (GPIOC->IDR == 0X1F0) //EVALUANDO FILA 3
+						 	 {
+						 		 keypressed = 15;
+						 	 }
+						 	 else
+						 	 {
+						 		 keypressed = 20;
+						 	 }
+						 //scan col3
+						 			 GPIOB->ODR |= (1<<11);
+						 			 GPIOC->ODR |= (1<<7);
+						 			 GPIOA->ODR |= (1<<9);
+						 			 GPIOC->ODR &=~ (1<<4);
+						 			 //delayMs(30);
+						 			 
+									 if (GPIOC->IDR == 0X3c0) //EVALUANDO FILA 0
+									 	 {
+									 		 keypressed = 10;
+									 	 }
+									 	 else if (GPIOC->IDR == 0X3a0) //EVALUANDO FILA 1
+									 	 {
+									 	     keypressed = 11;
+									 	     
+									 	 }
+									 	 else if (GPIOC->IDR == 0X2e0) //EVALUANDO FILA 2
+									 	 {
+									 		 keypressed = 12;
+									 	 }
+									 	 else if (GPIOC->IDR == 0X1e0) //EVALUANDO FILA 3
+									 	 {
+									 		 keypressed = 13;
+									 	 }
+									 	 else
+									 	 {
+									 		 keypressed = 20;
+									 	 }
+									 return keypressed;
+		 }
+		 
+/*32k? MHZ SYSCLK*/
+void delayMs(int n) { 
+	int i;
+	for(;n > 0;n==);
+	for(i=0; i<240; i++);
+	
+}
+	 }
+ }
+
+//CONSTANTES
+volatile uint8_t val;
+volatile uint8_t display;
+volatile uint8_t selec_disp;
+
+void DisplayConfig (){
+	//HABILITAR COMO SALIDA LOS PINES A UTILIZAR DEL PB PARA LOS SEGMENTOS
+
+	GPIOB->MODER &= ~(1<<3); //PB1-A
+	GPIOB->MODER &= ~(1<<5); //PB2-B
+	GPIOB->MODER &= ~(1<<7); //PB3-C
+	GPIOB->MODER &= ~(1<<9); //PB4-D
+	GPIOB->MODER &= ~(1<<13); //PB6-E
+	GPIOB->MODER &= ~(1<<15); //PB7-F
+	GPIOB->MODER &= ~(1<<17); //PB8-G
+
+//HABILITAR LOS PINES DEL PUERTO A PARA TRANSISTORES
+	GPIOA->MODER &= ~(1<<13); //PA6 ENCIENTE EL BIT10 Y HABILITA TRANSISTOR DISPLAY 1
+	GPIOA->MODER &= ~(1<<15); //PA7 ENCIENTE EL BIT12 Y HABILITA TRANSISTOR DISPLAY 2
+	GPIOA->MODER &= ~(1<<17); //PA8 ENCIENTE EL BIT16 Y HABILITA TRANSISTOR DISPLAY 3
+	GPIOA->MODER &= ~(1<<21); //PA10 ENCIENTE EL BIT20 Y HABILITA TRANSISTOR DISPLAY 4
+	GPIOA->MODER &= ~(1<<23); //PA11 ENCIENTE EL BIT23 Y HABILITA TRANSISTOR DISPLAY 5
+	GPIOA->MODER &= ~(1<<25); //PA12 ENCIENTE EL BIT25 Y HABILITA TRANSISTOR DISPLAY 6
+
+}
+
+ void print_7segmetsCC (uint8_t val,uint_8t display){
+
+	 if(display==0x01){
+
+		 GPIOA->BSRR=(0X1DC<<16);
+		 GPIOA->ODR=(0X01<<6);
+
+	 }else if(display==0x02)
+	 {
+		 GPIOA->BSRR=(0X1DC<<16);
+		 GPIOA->ODR=(0X01<<7);
+
+	 }else if(display==0x03)
+	 	 {
+	 		 GPIOA->BSRR=(0X1DC<<16);
+	 		 GPIOA->ODR=(0X01<<8);
+
+	 	}else if(display==0x04)
+	 	 {
+	 		 GPIOA->BSRR=(0X1DC<<16);
+	 		 GPIOA->ODR=(0X01<<10);
+
+	 	}else if(display==0x05)
+	 	 {
+	 		  GPIOA->BSRR=(0X1DC<<16);
+	 		  GPIOA->ODR=(0X01<<11);
+
+	 	}else if(display==0x06)
+	 		 {
+	 			 GPIOA->BSRR=(0X1DC<<16);
+	 			 GPIOA->ODR=(0X01<<12);
+	 }
+
+	 if (val==0)//0
+	 {
+		 GPIOB->ODR|=(0X01<<1);//a
+		 GPIOB->ODR|=(0X01<<2);//b
+		 GPIOB->ODR|=(0X01<<3);//c
+		 GPIOB->ODR|=(0X01<<4);//d
+		 GPIOB->ODR|=(0X01<<6);//e
+		 GPIOB->ODR|=(0X01<<7);//f
+
+	 }else if (val==1)//1
+	 {
+		 GPIOB->BSRR = (0X3DE <<16);
+
+		 GPIOB->ODR|=(0X01<<2);//b
+		 GPIOB->ODR|=(0X01<<3);//c
+
+	 }else if (val==1)//2
+	 {
+		 GPIOB->BSRR = (0X3DE <<16);
+
+		 GPIOB->ODR|=(0X01<<1);//a
+		 GPIOB->ODR|=(0X01<<2);//b
+		 GPIOB->ODR|=(0X01<<4);//d
+		 GPIOB->ODR|=(0X01<<6);//e
+		 GPIOB->ODR|=(0X01<<8);//g
+
+	 }else if (val==1)//3
+	 {
+	 	 GPIOB->BSRR = (0X3DE <<16);
+
+	 	GPIOB->ODR|=(0X01<<1);//a
+	 	GPIOB->ODR|=(0X01<<2);//b
+	    GPIOB->ODR|=(0X01<<3);//c
+	 	GPIOB->ODR|=(0X01<<4);//d
+	 	GPIOB->ODR|=(0X01<<8);//g
+
+	 }else if (val==1)//4
+	 {
+	 	GPIOB->BSRR = (0X3DE <<16);
+
+	 	GPIOB->ODR|=(0X01<<2);//b
+	 	GPIOB->ODR|=(0X01<<3);//c
+	 	GPIOB->ODR|=(0X01<<7);//f
+	 	GPIOB->ODR|=(0X01<<8);//g
+
+	 }else if (val==1)//5
+	 {
+	 	GPIOB->BSRR = (0X3DE <<16);
+
+		GPIOB->ODR|=(0X01<<1);//a
+	 	GPIOB->ODR|=(0X01<<3);//c
+	 	GPIOB->ODR|=(0X01<<4);//d
+	 	GPIOB->ODR|=(0X01<<7);//f
+	 	GPIOB->ODR|=(0X01<<8);//g
+
+	 }else if (val==1)//6
+	 {
+	 	GPIOB->BSRR = (0X3DE <<16);
+
+	 	GPIOB->ODR|=(0X01<<1);//a
+	 	GPIOB->ODR|=(0X01<<3);//c
+	 	GPIOB->ODR|=(0X01<<4);//d
+	 	GPIOB->ODR|=(0X01<<6);//e
+	 	GPIOB->ODR|=(0X01<<7);//f
+	 	GPIOB->ODR|=(0X01<<8);//g
+
+	 }else if (val==1)//7
+	 {
+	 	 GPIOB->BSRR = (0X3DE <<16);
+
+	 	GPIOB->ODR|=(0X01<<1);//a
+	 	GPIOB->ODR|=(0X01<<2);//b
+	 	GPIOB->ODR|=(0X01<<3);//c
+
+	 }else if (val==1)//8
+	 {
+	    GPIOB->BSRR = (0X3DE <<16);
+
+	    GPIOB->ODR|=(0X01<<1);//a
+	    GPIOB->ODR|=(0X01<<2);//b
+	    GPIOB->ODR|=(0X01<<3);//c
+	    GPIOB->ODR|=(0X01<<4);//d
+	    GPIOB->ODR|=(0X01<<6);//e
+	    GPIOB->ODR|=(0X01<<7);//f
+	    GPIOB->ODR|=(0X01<<8);//g
+
+	 }else if (val==1)//8
+	 {
+	 	GPIOB->BSRR = (0X3DE <<16);
+
+	 	GPIOB->ODR|=(0X01<<1);//a
+	 	GPIOB->ODR|=(0X01<<2);//b
+	 	GPIOB->ODR|=(0X01<<3);//c
+	 	GPIOB->ODR|=(0X01<<7);//f
+	    GPIOB->ODR|=(0X01<<8);//g
+	 }
+
+ }
+
+int main(void)
+{
+   __disable_irq();//Disable Global INTERRUPTS
+
+   //ENABLE HSI 16MHZ
+   //HSI ON
+   RCC->CR |= (1<<0);
+   //HSI16 AS SYSCLK
+   RCC->CFGR |= (1<<0);
+
+   //ENABLE GPIOA CLK
+   RCC->IOPENR |= (1<<0); //PA
+   //ENABLE GPIOB
+   RCC->IOPENR |= (1<<1); //PB
+   //CLK DEL MOTOR DE INTERRUPTS
+   //ENABLE SYSCFG CLK
+   RCC->APB2ENR |= (1<<0);
+   ////////////////////////
+   //GPIO CONFIG
+   //PA5 as OUTPUT
+   GPIOA->MODER &= ~(1<<11);
+   ////////////////////////
+
+   DisplayConfig();
+
+   //tim21 setup 0.1segundos
+   RCC->APB2ENR |= (1<<2);
+   TIM21->PSC = 1600 - 1;
+   TIM21->ARR = 1000;
+   TIM21->CR1 |= (1<<0);
+   TIM21->DIER |= (1<<0);
+
+   //tim22 setup 2 milesimas
+      RCC->APB2ENR |= (1<<5);
+      TIM22->PSC = 1600 - 1;
+      TIM22->ARR = 2-1;
+      TIM22->CR1 |= (1<<0);
+      TIM22->DIER |= (1<<0);
+
+    ////////////////////////
+      //habilitar las interrupciones
+      NVIC_EnableIRQ(TIM21_IRQn);
+      NVIC_EnableIRQ(TIM22_IRQn);
+
+      __enable_irq();   //Enable Global Interrupts
+
+      while(1)
+
+      {
+
+  
+
+  void TIM22_IRQHandler()
+  {
+	  selec_disp++;
+	  //GPIOA->ODR^=(1<<5);
+	  if (selec_disp == 7)
+	  {
+		  selec_disp = 0;
+	  }
+
+	  else if (selec_disp == 6)
+	  {
+		 
+		     	//GPIOA->ODR^=(1<<5);
+		 	  }
+
+   TIM22->SR &= ~(1<<0);
+
+
+    }
+
